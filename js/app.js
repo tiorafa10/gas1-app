@@ -2,12 +2,27 @@
  * Entrada principal - conecta DB, Mapa e UI.
  */
 (function () {
-  // Registrar Service Worker
+  // Registrar Service Worker com auto-update
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(function () {
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
       console.log('Service Worker registrado');
+      // Forcar checagem de atualizacao
+      reg.update();
+      // Quando novo SW estiver pronto, recarregar
+      reg.addEventListener('updatefound', function () {
+        var newSW = reg.installing;
+        newSW.addEventListener('statechange', function () {
+          if (newSW.state === 'activated') {
+            window.location.reload();
+          }
+        });
+      });
     }).catch(function (err) {
       console.warn('SW erro:', err);
+    });
+    // Se o SW controller mudar, recarregar
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      window.location.reload();
     });
   }
 
