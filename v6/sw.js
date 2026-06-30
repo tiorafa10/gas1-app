@@ -1,4 +1,4 @@
-var CACHE_NAME = 'gas1-v6';
+var CACHE_NAME = 'gas1-v7';
 var FILES_TO_CACHE = [
   './',
   './index.html',
