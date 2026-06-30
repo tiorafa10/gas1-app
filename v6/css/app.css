@@ -1,0 +1,390 @@
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  color: #222;
+  background: #1a1a2e;
+}
+
+/* ===== SPLASH ===== */
+#splash {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.3s;
+}
+
+#splash h1 {
+  color: #fff;
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+#splash p {
+  color: #aaa;
+  font-size: 14px;
+}
+
+/* ===== MAPA ===== */
+#map {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+}
+
+/* ===== BARRA DE FILTROS ===== */
+#filter-bar {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(30, 30, 50, 0.85);
+  color: #ccc;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+
+.filter-btn.active {
+  background: #4CAF50;
+  color: #fff;
+}
+
+/* ===== STATS ===== */
+#stats-bar {
+  position: fixed;
+  top: 55px;
+  left: 10px;
+  z-index: 1000;
+  background: rgba(30, 30, 50, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.stat-dot.green { background: #4CAF50; }
+.stat-dot.orange { background: #FF9800; }
+.stat-dot.gray { background: #9E9E9E; }
+
+/* ===== BOTOES FLUTUANTES ===== */
+#btn-gps, #btn-export {
+  position: fixed;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(30, 30, 50, 0.9);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+#btn-gps {
+  bottom: 100px;
+  right: 10px;
+}
+
+#btn-export {
+  bottom: 155px;
+  right: 10px;
+  font-size: 16px;
+}
+
+/* ===== OVERLAY ===== */
+#panel-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#panel-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== PAINEL DO POSTE ===== */
+#pole-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 80vh;
+  z-index: 2000;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#pole-panel.visible {
+  transform: translateY(0);
+}
+
+/* Handle do painel */
+.panel-handle {
+  width: 40px;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  margin: 10px auto;
+}
+
+/* Header do painel */
+.panel-header {
+  padding: 4px 16px 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h2 {
+  font-size: 20px;
+  color: #1a1a2e;
+}
+
+#btn-close-panel {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f0f0f0;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+/* Info do poste */
+.pole-info {
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #eee;
+}
+
+.pole-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.pole-info-label {
+  color: #888;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pole-info-value {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Lista de atividades */
+.activities-header {
+  padding: 12px 16px 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#activities-list {
+  padding: 0 16px 24px;
+}
+
+.activity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-row:last-child {
+  border-bottom: none;
+}
+
+.activity-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activity-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.activity-row.done .activity-name {
+  color: #4CAF50;
+}
+
+.activity-date {
+  font-size: 11px;
+  color: #888;
+}
+
+/* Toggle de atividade */
+.activity-toggle {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border: 3px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: transparent;
+  margin-left: 12px;
+}
+
+.activity-toggle.active {
+  background: #4CAF50;
+  border-color: #4CAF50;
+  color: #fff;
+}
+
+/* ===== BOTAO SALVAR ===== */
+#btn-save-panel {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 12px 16px 24px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #4CAF50;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#btn-save-panel:active {
+  background: #388E3C;
+}
+
+/* ===== TOOLTIP DOS POSTES ===== */
+.pole-tooltip {
+  background: rgba(30, 30, 50, 0.9) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #fff !important;
+  font-size: 11px !important;
+  padding: 3px 8px !important;
+  font-weight: 600;
+}
+
+.pole-tooltip::before {
+  border-top-color: rgba(30, 30, 50, 0.9) !important;
+}
+
+/* ===== VERSAO ===== */
+#version-tag {
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+  z-index: 1000;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 380px) {
+  .filter-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .activity-name {
+    font-size: 13px;
+  }
+}
+
+/* Safe area para notch */
+@supports (padding-top: env(safe-area-inset-top)) {
+  #filter-bar {
+    top: calc(10px + env(safe-area-inset-top));
+  }
+  #pole-panel {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
