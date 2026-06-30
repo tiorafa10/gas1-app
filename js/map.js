@@ -31,46 +31,90 @@ var MapController = (function () {
       attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // Iniciar GPS
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
-    map.locate({ watch: true, enableHighAccuracy: true, maximumAge: 30000 });
+    // Iniciar GPS via API nativa do navegador
+    startGPS();
   }
 
-  function onLocationFound(e) {
-    var radius = e.accuracy / 2;
-    if (gpsMarker) {
-      gpsMarker.setLatLng(e.latlng);
-      gpsCircle.setLatLng(e.latlng).setRadius(radius);
-    } else {
-      gpsMarker = L.circleMarker(e.latlng, {
-        radius: 8,
-        color: '#2196F3',
-        fillColor: '#2196F3',
-        fillOpacity: 1,
-        weight: 2
-      }).addTo(map);
+  var lastGPSLatLng = null;
 
-      gpsCircle = L.circle(e.latlng, {
-        radius: radius,
-        color: '#2196F3',
-        fillColor: '#2196F3',
-        fillOpacity: 0.1,
-        weight: 1
-      }).addTo(map);
-    }
-  }
+  function startGPS() {
+    if (!navigator.geolocation) return;
 
-  function onLocationError() {
-    // GPS pode demorar em areas remotas, nao mostrar erro
+    navigator.geolocation.watchPosition(
+      function (pos) {
+        var latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+        var radius = pos.coords.accuracy / 2;
+        lastGPSLatLng = latlng;
+
+        if (gpsMarker) {
+          gpsMarker.setLatLng(latlng);
+          gpsCircle.setLatLng(latlng).setRadius(radius);
+        } else {
+          gpsMarker = L.circleMarker(latlng, {
+            radius: 8,
+            color: '#2196F3',
+            fillColor: '#2196F3',
+            fillOpacity: 1,
+            weight: 2,
+            pane: 'markerPane'
+          }).addTo(map);
+
+          gpsCircle = L.circle(latlng, {
+            radius: radius,
+            color: '#2196F3',
+            fillColor: '#2196F3',
+            fillOpacity: 0.1,
+            weight: 1
+          }).addTo(map);
+        }
+      },
+      function (err) {
+        console.warn('GPS erro:', err.message);
+      },
+      { enableHighAccuracy: true, maximumAge: 30000, timeout: 15000 }
+    );
   }
 
   function centerOnGPS() {
-    if (gpsMarker) {
-      map.setView(gpsMarker.getLatLng(), 17);
+    if (lastGPSLatLng) {
+      map.setView(lastGPSLatLng, 17);
     } else {
-      // GPS ainda nao fixou - tentar novamente
-      map.locate({ setView: true, maxZoom: 17, enableHighAccuracy: true });
+      // Tentar pegar posicao unica
+      if (!navigator.geolocation) {
+        alert('GPS nao disponivel neste dispositivo');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          var latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+          lastGPSLatLng = latlng;
+
+          if (!gpsMarker) {
+            gpsMarker = L.circleMarker(latlng, {
+              radius: 8,
+              color: '#2196F3',
+              fillColor: '#2196F3',
+              fillOpacity: 1,
+              weight: 2,
+              pane: 'markerPane'
+            }).addTo(map);
+
+            gpsCircle = L.circle(latlng, {
+              radius: pos.coords.accuracy / 2,
+              color: '#2196F3',
+              fillColor: '#2196F3',
+              fillOpacity: 0.1,
+              weight: 1
+            }).addTo(map);
+          }
+
+          map.setView(latlng, 17);
+        },
+        function (err) {
+          alert('Nao foi possivel obter localizacao: ' + err.message);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
     }
   }
 
