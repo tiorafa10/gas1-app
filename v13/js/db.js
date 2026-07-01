@@ -82,9 +82,18 @@ const DB = (function () {
     });
   }
 
+  var ACTIVITY_NAMES = {
+    '8.12.1': 'Escavacao',
+    '8.12.2': 'Distribuicao',
+    '8.12.3': 'Implantacao',
+    '8.12.4': 'Concretagem',
+    '8.12.5': 'Adensamento',
+    '8.12.6': 'Selo'
+  };
+
   function exportAll() {
     return getAllProgress().then(function (records) {
-      const lines = ['PoleId;Barramento;Parque;Atividade;Concluido;Data'];
+      const lines = ['PoleId;Barramento;Parque;Codigo;Atividade;Concluido;Data'];
       records.forEach(function (rec) {
         var pole = POLES_DATA.find(function (p) { return p.id === rec.poleId; });
         var parque = pole ? pole.parque : '';
@@ -92,7 +101,8 @@ const DB = (function () {
         Object.keys(rec.activities).forEach(function (code) {
           var act = rec.activities[code];
           if (act.done) {
-            lines.push([rec.poleId, barramento, parque, code, 'Sim', act.date || ''].join(';'));
+            var nome = ACTIVITY_NAMES[code] || code;
+            lines.push([rec.poleId, barramento, parque, code, nome, 'Sim', act.date || ''].join(';'));
           }
         });
       });
