@@ -84,14 +84,15 @@ const DB = (function () {
 
   function exportAll() {
     return getAllProgress().then(function (records) {
-      const lines = ['PoleId;Parque;Atividade;Concluido;Data'];
+      const lines = ['PoleId;Barramento;Parque;Atividade;Concluido;Data'];
       records.forEach(function (rec) {
         var pole = POLES_DATA.find(function (p) { return p.id === rec.poleId; });
         var parque = pole ? pole.parque : '';
+        var barramento = pole ? pole.barramento : '';
         Object.keys(rec.activities).forEach(function (code) {
           var act = rec.activities[code];
           if (act.done) {
-            lines.push([rec.poleId, parque, code, 'Sim', act.date || ''].join(';'));
+            lines.push([rec.poleId, barramento, parque, code, 'Sim', act.date || ''].join(';'));
           }
         });
       });
